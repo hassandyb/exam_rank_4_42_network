@@ -18,12 +18,33 @@ int ft_strcmp(char *s1, char *s2)
     return (0);
 }
 
+int ft_error(char *err)
+{
+    int i = -1;
+    while(err[++i])
+        write(2, &err[i], 1);
+    return 1;
+}
 
+int ft_cd (char **argv, char **envp)
+{
+    if(argv[1] == NULL || ft_strcmp(argv[1], "|") == 1 || ft_strcmp(argv[1], ";") == 1)
+        return (ft_error ("error: cd: bad arguments\n"));
+    else if(chdir(argv[1]) == -1)
+    {
+        ft_error(" cd: ");
+        ft_error(argv[1]);
+        ft_error(": No such file or directory");
+        return (1);
+    }
+    return (0);
+}
 
-
-
-
-
+int ft_exec(char **argv, int i, char **envp)
+{
+    int fd[2];
+    int status;
+}
 
 
 
@@ -42,12 +63,13 @@ int main (int argc, char **argv, char **envp)
                 i++;
             }
             if(ft_strcmp(*argv, "cd") == 1)
-                status = ft_cd(argv, i, envp);
-            else
-                status = ft_exec()
-            // printf("%d\n", i);
+                status = ft_cd(argv, envp);
+            else if(i != 0) // i == 0 means we are in the end 
+                status = ft_exec(argv, i, envp)
+            printf("%d\n", i);
         }
     }
+    return status;
 }
 
 

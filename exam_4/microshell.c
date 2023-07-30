@@ -60,7 +60,7 @@ int main(int argc, char **argv, char **envp)
             i = 0; // Reset i to 0
             while (argv[i] && strcmp(argv[i], "|") && strcmp(argv[i], ";"))
                 i++; // Find the next pipe or semicolon or end of arguments
-            if (strcmp(*argv, "cd") == 0)
+            if (!strcmp(*argv, "cd"))
                 status = cd(argv, i); // Execute cd command
             else if (i)
                 status = exec(argv, envp, i); // Execute other commands
