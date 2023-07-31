@@ -44,6 +44,23 @@ int ft_exec(char **argv, int i, char **envp)
 {
     int fd[2];
     int status;
+    int has_pipe = 0;
+    if(argv[i] != NULL && ft_strcmp(argv[i], "|") == 1)
+        has_pipe = 1;
+    if(has_pipe == 1 && pipe(fd) == -1)
+        return (ft_error("error: fatal\n"));
+    int pid = fork();
+    if(pid == 0)//child process
+    {
+        if(has_pipe == 1 && (dup2(fd[1], 1) == -1 || close(fd[0]) == -1 || close(fd[1]) == -1))
+            return ft_error("error: fatal\n");
+        execve(*argv, argv, envp);
+        return ft_error (*argv), ft_error(": command not found\n");
+    }
+    waitpid(pid, &status, 0);
+    if(has_pipe == 1 && (dup2(fd[0], 0) == -1 || close(fd[0] == -1 || close(fd[1]) == -1)))
+        return ft_error("error fatal\n");
+    return (WIFEXITED(status) && WEXITSTATUS(status));
 }
 
 
@@ -62,11 +79,12 @@ int main (int argc, char **argv, char **envp)
             {
                 i++;
             }
-            if(ft_strcmp(*argv, "cd") == 1)
+            // printf("%s\n", *argv);
+            if(ft_strcmp(*argv, "/bin/cd") == 1)
                 status = ft_cd(argv, envp);
             else if(i != 0) // i == 0 means we are in the end 
-                status = ft_exec(argv, i, envp)
-            printf("%d\n", i);
+                status = ft_exec(argv, i, envp);
+         
         }
     }
     return status;

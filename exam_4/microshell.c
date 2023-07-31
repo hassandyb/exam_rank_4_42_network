@@ -11,15 +11,7 @@ int err(char *str)
     return 1;
 }
 
-// Function to change the current directory
-int cd(char **argv, int i) 
-{
-    if (i != 2)
-        return err("error: cd: bad arguments\n"); // Return an error if the argument count is not 2
-    else if (chdir(argv[1]) == -1)
-        return err("error: cd: cannot change directory to "), err(argv[1]), err("\n"); // Return an error if directory change fails
-    return 0; // Return 0 on success
-}
+
 
 // Function to execute a command
 int exec(char **argv, char **envp, int i) 
@@ -31,8 +23,8 @@ int exec(char **argv, char **envp, int i)
     if (has_pipe && pipe(fd) == -1)
         return err("error: fatal\n"); // Return an error if pipe creation fails
 
-    int pid = fork(); // Create a child process
-    if (!pid) 
+    int pid = fork(); 
+    if (pid == 0) // Create a child process
     {
         argv[i] = 0; // Set the element after the pipe or semicolon to null
         if (has_pipe && (dup2(fd[1], 1) == -1 || close(fd[0]) == -1 || close(fd[1]) == -1))
@@ -46,6 +38,18 @@ int exec(char **argv, char **envp, int i)
         return err("error: fatal\n"); // Return an error if pipe redirection or closing fails
     return WIFEXITED(status) && WEXITSTATUS(status);
 }
+
+
+// Function to change the current directory
+int cd(char **argv, int i) 
+{
+    if (i != 2)
+        return err("error: cd: bad arguments\n"); // Return an error if the argument count is not 2
+    else if (chdir(argv[1]) == -1)
+        return err("error: cd: cannot change directory to "), err(argv[1]), err("\n"); // Return an error if directory change fails
+    return 0; // Return 0 on success
+}
+
 
 int main(int argc, char **argv, char **envp) 
 {
